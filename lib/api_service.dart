@@ -13,12 +13,19 @@ class ApiService {
       final Map<String, dynamic> data = jsonDecode(response.body);
       final Map<String, dynamic> breedsMap = data['message'];
 
-      return breedsMap.keys.map((breedName) {
-        return DogBreed(
-          id: Random().nextInt(1000000),
-          name: breedName,
+      List<DogBreed> DogList = [];
+
+      breedsMap.forEach((breedName, subBreedsList) {
+        DogList.add(
+          DogBreed(
+            id: Random().nextInt(1000000),
+            name: breedName,
+            subBreeds: List<String>.from(subBreedsList),
+          ),
         );
-      }).toList();
+      });
+
+      return DogList;
     } else {
       throw Exception("Nie udało się pobrać ras psów (Kod: ${response.statusCode})");
     }

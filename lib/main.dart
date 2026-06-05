@@ -118,7 +118,7 @@ class _BreedListScreenState extends State<BreedListScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => BreedDetailScreen(breedName: breed.name),
+                        builder: (context) => BreedDetailScreen(breed: breed),
                       ),
                     );
                   },
@@ -133,8 +133,8 @@ class _BreedListScreenState extends State<BreedListScreen> {
 }
 
 class BreedDetailScreen extends StatefulWidget {
-  final String breedName;
-  const BreedDetailScreen({super.key, required this.breedName});
+  final DogBreed breed;
+  const BreedDetailScreen({super.key, required this.breed});
 
   @override
   State<BreedDetailScreen> createState() => _BreedDetailScreenState();
@@ -152,13 +152,13 @@ class _BreedDetailScreenState extends State<BreedDetailScreen> {
 
   void _loadImage() {
     setState(() {
-      _imageFuture = ApiService.fetchRandomImageForBreed(widget.breedName);
+      _imageFuture = ApiService.fetchRandomImageForBreed(widget.breed.name);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final titleName = widget.breedName[0].toUpperCase() + widget.breedName.substring(1);
+    final titleName = widget.breed.name[0].toUpperCase() + widget.breed.name.substring(1);
 
     return Scaffold(
       appBar: AppBar(title: Text(titleName), backgroundColor: Color(0xFFADEBB3)),
@@ -213,9 +213,26 @@ class _BreedDetailScreenState extends State<BreedDetailScreen> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        "zdjęcie $titleName",
+                        "zdjęcie: $titleName",
                         style: const TextStyle(fontSize: 16),
                       ),
+                      const SizedBox(height: 12),
+                      const Text(
+                        "Dostępne typy tej rasy:",
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                      ),
+                      const SizedBox(height: 4),
+                      if (widget.breed.subBreeds.isEmpty)
+                        const Text(
+                          "Brak dodatkowych typów",
+                          style: TextStyle(fontSize: 15, color: Colors.black),
+                        )
+                      else
+                        Text(
+                          widget.breed.subBreeds.join(", "),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontSize: 16, color: Color(0xFFADEBB3)),
+                        ),
                       const SizedBox(height: 8),
                       TextButton.icon(
                         onPressed: _loadImage,
