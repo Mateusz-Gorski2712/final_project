@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'dog_model.dart';
 import 'api_service.dart';
+import 'dog_local_database.dart';
+import 'dog_sync_service.dart';
+import 'package:hive_ce/hive.dart';
+import 'package:hive_ce_flutter/hive_flutter.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Hive.initFlutter();
+  await Hive.openBox("dogs");
+
   runApp(const DogApp());
 }
 
@@ -35,12 +44,35 @@ class _BreedListScreenState extends State<BreedListScreen> {
   @override
   void initState() {
     super.initState();
-    _loadBreeds();
+    _initData();
   }
 
-  void _loadBreeds() {
+  void _initData() {
     setState(() {
-      _breedsFuture = ApiService.fetchAllBreeds();
+      _breedsFuture = _loadBreeds();
+    });
+  }
+
+  Future<List<DogBreed>> _loadBreeds() async {
+    await DogSyncService.loadInitialDataIfNeeded();
+
+    final BreedsDatabase = DogLocalDatabase.getBreeds();
+    if (BreedsDatabase.isEmpty) {
+      throw Exception("Brak połączenia z internetem i brak danych offline.");
+    }
+    return BreedsDatabase;
+  }
+
+  void _forceRefresh() {
+    setState(() {
+      _breedsFuture = ApiService.fetchAllBreeds().then((apiBreeds) async {
+        await DogLocalDatabase.saveBreeds(apiBreeds);
+        return apiBreeds;
+      }).catchError((error) {
+        final local = DogLocalDatabase.getBreeds();
+        if (local.isNotEmpty) return local;
+        throw error;
+      });
     });
   }
 
@@ -52,7 +84,7 @@ class _BreedListScreenState extends State<BreedListScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
-            onPressed: _loadBreeds,
+            onPressed: _forceRefresh,
           ),
         ],
       ),
@@ -86,7 +118,7 @@ class _BreedListScreenState extends State<BreedListScreen> {
                     const SizedBox(height: 16),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFADEBB3)),
-                      onPressed: _loadBreeds,
+                      onPressed: _forceRefresh,
                       child: const Text("Spróbuj ponownie", style: TextStyle(color: Colors.white)),
                     ),
                   ],
