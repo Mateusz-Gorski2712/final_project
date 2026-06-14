@@ -71,7 +71,7 @@ class _BreedListScreenState extends State<BreedListScreen> {
       }).catchError((error) {
         final local = DogLocalDatabase.getBreeds();
         if (local.isNotEmpty) return local;
-        throw error;
+        throw Exception("Brak połączenia z internetem");
       });
     });
   }
