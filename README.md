@@ -1,17 +1,16 @@
-# final_project
+# Rasy Psów Flutter Dog API
 
-A new Flutter project.
+Prosta aplikacja mobilna stworzona w środowisku Flutter, 
+służąca do przeglądania ras psów oraz ich podras, zintegrowana 
+z zewnętrznym API oraz lokalną bazą danych.
 
-## Getting Started
+## Funkcjonalności
 
-This project is a starting point for a Flutter application.
+- **Dwa ekrany**: Lista wszystkich ras psów oraz szczegóły wybranej rasy.
+- **REST API**: Pobieranie listy ras oraz losowanie zdjęć dla konkretnej rasy z serwisu [Dog CEO API](https://dog.ceo/dog-api/).
+- **Tryb Offline**: Dane o rasach są zapisywane w lokalnej bazie danych Hive. Po pierwszym uruchomieniu aplikacja działa bez dostępu do Internetu.
 
-A few resources to get you started if this is your first Flutter project:
+## Wykorzystane pakiety:
+- http - do komunikacji z zewnętrznym API.
+- hive_ce & hive_ce_flutter - lokalna baza danych do zapisu offline.
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
